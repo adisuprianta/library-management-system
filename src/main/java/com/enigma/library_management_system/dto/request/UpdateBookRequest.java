@@ -3,6 +3,7 @@ package com.enigma.library_management_system.dto.request;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,6 +14,6 @@ public class UpdateBookRequest {
     private String bookId;
     private String title;
     private String author;
-    private String genre;
     private LocalDate publishedDate;
+    private List<String> listGenreId;
 }

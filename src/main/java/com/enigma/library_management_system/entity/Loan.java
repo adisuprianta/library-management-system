@@ -1,9 +1,6 @@
 package com.enigma.library_management_system.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -15,6 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Entity
 @Table(name = "t_loan")
+@Builder
 public class Loan {
     @Id
     @GenericGenerator(name = "uuid",strategy = "uuid")

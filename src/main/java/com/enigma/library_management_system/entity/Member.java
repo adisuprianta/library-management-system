@@ -1,15 +1,9 @@
 package com.enigma.library_management_system.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Setter
 @Getter
@@ -17,12 +11,14 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @Entity
 @Table(name = "m_member")
+@Builder
 public class Member {
     @Id
     @GenericGenerator(name = "uuid",strategy = "uuid")
     @GeneratedValue(generator = "uuid")
     private String id;
     private String name;
+    @Column(unique = true)
     private String email;
     private String address;
     private Boolean status;

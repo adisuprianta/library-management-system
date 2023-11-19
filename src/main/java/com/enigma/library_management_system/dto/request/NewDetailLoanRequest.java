@@ -9,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DetailLoanRequest {
+public class NewDetailLoanRequest {
     @NotBlank(message = "book copies is required")
     private String bookCopiesId;
 }

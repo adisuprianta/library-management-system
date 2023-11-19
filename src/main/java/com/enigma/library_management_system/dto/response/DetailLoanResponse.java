@@ -12,5 +12,9 @@ import java.util.List;
 @Builder
 public class DetailLoanResponse {
     private String detailLoanId;
-    private List<BookCopiesResponse> bookCopies;
+    private String title;
+    private String author;
+    private String publishedDate;
+    private String isbn;
+    private Boolean availabilityStatus;
 }

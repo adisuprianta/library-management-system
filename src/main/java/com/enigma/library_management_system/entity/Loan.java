@@ -30,7 +30,7 @@ public class Loan {
     @Column(name = "checkin_date")
     private LocalDate checkinDate;
 
-    @OneToMany(mappedBy = "loan")
+    @OneToMany(mappedBy = "loan",cascade = CascadeType.PERSIST)
     @JsonManagedReference
     private List<DetailLoan> detailLoans;
 }

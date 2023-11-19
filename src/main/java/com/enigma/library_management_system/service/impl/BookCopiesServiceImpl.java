@@ -72,6 +72,11 @@ public class BookCopiesServiceImpl implements BookCopiesService {
         return mapToResponse(bookCopies);
     }
 
+    @Override
+    public BookCopies findById(String id) {
+        return getBookCopies(id);
+    }
+
 
     @Transactional(readOnly = true)
     @Override

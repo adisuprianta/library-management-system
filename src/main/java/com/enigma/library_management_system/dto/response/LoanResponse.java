@@ -15,6 +15,6 @@ public class LoanResponse {
     private String checkoutDate;
     private String dueDate;
     private String checkinDate;
-    private MemberResponse member;
+    private String memberName;
     private List<DetailLoanResponse> detailLoans;
 }

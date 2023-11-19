@@ -22,7 +22,7 @@ public class DetailLoan {
     @JoinColumn(name = "loan_id")
     @JsonBackReference
     private Loan loan;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "book_copy_id")
     @JsonBackReference
     private BookCopies bookCopies;

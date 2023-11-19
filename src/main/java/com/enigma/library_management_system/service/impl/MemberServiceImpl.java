@@ -6,6 +6,7 @@ import com.enigma.library_management_system.dto.response.MemberResponse;
 import com.enigma.library_management_system.entity.Member;
 import com.enigma.library_management_system.repository.MemberRepository;
 import com.enigma.library_management_system.service.MemberService;
+import com.enigma.library_management_system.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -20,11 +21,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
-
+    private final ValidationUtil validationUtil;
     @Transactional(rollbackFor = Exception.class)
     @Override
     public MemberResponse createNew(NewMemberRequest request) {
         try{
+            validationUtil.validate(request);
             Member member = Member.builder()
                     .status(request.getMemberStatus())
                     .email(request.getMemberEmail())
@@ -43,6 +45,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberResponse update(UpdateMemberRequest request) {
         try{
+            validationUtil.validate(request);
             Member member = getMember(request.getMemberId());
             member.setAddress(request.getAddress());
             member.setName(request.getMemberName());

@@ -1,6 +1,7 @@
 package com.enigma.library_management_system.controller;
 
 import com.enigma.library_management_system.dto.response.CommonResponse;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,6 +28,16 @@ public class ErrorController {
         CommonResponse<?> response = CommonResponse.builder()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .message(e.getMessage())
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(response);
+    }
+    @ExceptionHandler(InvalidFormatException.class)
+    public ResponseEntity<?> invalidFormatException(InvalidFormatException e) {
+        CommonResponse<?> response = CommonResponse.builder()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .message("invalid date format for field")
                 .build();
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)

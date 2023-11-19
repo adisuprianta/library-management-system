@@ -4,12 +4,12 @@ import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
-@Getter
 @Builder
-public class NewGenreRequest {
-    @NotBlank(message = "genre name is required")
-    private String name;
+public class DetailLoanRequest {
+    @NotBlank(message = "book copies is required")
+    private String bookCopiesId;
 }

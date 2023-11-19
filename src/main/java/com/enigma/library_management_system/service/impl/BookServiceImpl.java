@@ -9,6 +9,7 @@ import com.enigma.library_management_system.entity.Genre;
 import com.enigma.library_management_system.repository.BookRepository;
 import com.enigma.library_management_system.service.BookService;
 import com.enigma.library_management_system.service.GenreService;
+import com.enigma.library_management_system.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -26,12 +27,14 @@ import java.util.stream.Collectors;
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final GenreService genreService;
+    private final ValidationUtil validationUtil;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public BookReponse createNew(NewBookRequest request) {
         try {
-            List<Genre> genres = getGenres(request.getListGenreId());
+            validationUtil.validate(request);
+            List<Genre> genres = getGenres(request.getGenres());
 
             Book book = Book.builder()
                     .author(request.getAuthor())
@@ -52,10 +55,9 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookReponse update(UpdateBookRequest request) {
         try {
-            List<Genre> genres = getGenres(request.getListGenreId());
-            Book book = bookRepository.findById(request.getBookId()).orElseThrow(() ->
-                    new ResponseStatusException(HttpStatus.NOT_FOUND, "book not found")
-            );
+            validationUtil.validate(request);
+            List<Genre> genres = getGenres(request.getGenres());
+            Book book = getBook(request.getBookId());
             book.setAuthor(request.getAuthor());
             book.setTitle(request.getTitle());
             book.setBookGenre(genres);
@@ -63,7 +65,7 @@ public class BookServiceImpl implements BookService {
             bookRepository.saveAndFlush(book);
             return mapToBookResponse(book);
         } catch (DataIntegrityViolationException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "title book already exist");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "book already exist");
         }
     }
 
@@ -85,16 +87,13 @@ public class BookServiceImpl implements BookService {
     @Transactional(readOnly = true)
     @Override
     public Book getById(String id) {
-        return bookRepository.findById(id).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "book not found")
-        );
+        return getBook(id);
     }
+
 
     @Override
     public void deleteById(String id) {
-        Book book = bookRepository.findById(id).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "book not found")
-        );
+        Book book = getBook(id);
         bookRepository.delete(book);
     }
 
@@ -108,7 +107,7 @@ public class BookServiceImpl implements BookService {
                 .bookId(book.getId())
                 .author(book.getAuthor())
                 .genres(genreResponseList)
-                .publishedDate(book.getPublishedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                .publishedDate(book.getPublishedDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
                 .title(book.getTitle())
                 .build();
     }
@@ -116,5 +115,10 @@ public class BookServiceImpl implements BookService {
     private List<Genre> getGenres(List<String> listGenre) {
         return listGenre.stream().map(genreService::getById)
                 .collect(Collectors.toList());
+    }
+    private Book getBook(String id) {
+        return bookRepository.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "book not found")
+        );
     }
 }

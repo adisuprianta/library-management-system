@@ -10,6 +10,7 @@ import com.enigma.library_management_system.entity.BookCopies;
 import com.enigma.library_management_system.repository.BookCopiesRepository;
 import com.enigma.library_management_system.service.BookCopiesService;
 import com.enigma.library_management_system.service.BookService;
+import com.enigma.library_management_system.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -27,11 +28,13 @@ public class BookCopiesServiceImpl implements BookCopiesService {
 
     private final BookCopiesRepository bookCopiesRepository;
     private final BookService bookService;
+    private final ValidationUtil validationUtil;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public BookCopiesResponse createNew(NewBookCopiesRequest request) {
         try{
+            validationUtil.validate(request);
             Book book = bookService.getById(request.getBookId());
             BookCopies bookCopies = BookCopies.builder()
                     .book(book)
@@ -49,6 +52,7 @@ public class BookCopiesServiceImpl implements BookCopiesService {
     @Override
     public BookCopiesResponse update(UpdateBookCopiesRequest request) {
         try{
+            validationUtil.validate(request);
             Book book = bookService.getById(request.getBookId());
             BookCopies bookCopies = getBookCopies(request.getBookCopiesID());
             bookCopies.setBook(book);

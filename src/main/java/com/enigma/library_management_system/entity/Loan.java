@@ -1,10 +1,12 @@
 package com.enigma.library_management_system.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Setter
 @Getter
@@ -27,4 +29,8 @@ public class Loan {
     private LocalDate dueDate;
     @Column(name = "checkin_date")
     private LocalDate checkinDate;
+
+    @OneToMany(mappedBy = "loan")
+    @JsonManagedReference
+    private List<DetailLoan> detailLoans;
 }

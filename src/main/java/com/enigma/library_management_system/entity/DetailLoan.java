@@ -1,5 +1,6 @@
 package com.enigma.library_management_system.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -19,8 +20,10 @@ public class DetailLoan {
     private String id;
     @ManyToOne
     @JoinColumn(name = "loan_id")
+    @JsonBackReference
     private Loan loan;
     @ManyToOne
     @JoinColumn(name = "book_copy_id")
+    @JsonBackReference
     private BookCopies bookCopies;
 }

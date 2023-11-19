@@ -38,14 +38,14 @@ public class LoanServiceImpl implements LoanService {
         try {
             validationUtil.validate(request);
             Member member = memberService.findById(request.getMemberId());
-            if (member.getStatus()){
+            if (!member.getStatus()){
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN,"member cannot borrow");
             }
 
             List<DetailLoan> detailLoans = request.getDetailLoans().stream()
                     .map(detailLoanRequest -> {
                         BookCopies bookCopies = bookCopiesService.findById(detailLoanRequest.getBookCopiesId());
-                        if (bookCopies.getAvailabilityStatus()){
+                        if (!bookCopies.getAvailabilityStatus()){
                             throw new ResponseStatusException(HttpStatus.CONFLICT,"Book is not available for borrowing");
                         }
                         bookCopies.setAvailabilityStatus(false);

@@ -13,9 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.transaction.Transactional;
+
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,10 +26,11 @@ import java.util.stream.Collectors;
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final GenreService genreService;
-    @Transactional(rollbackOn = Exception.class)
+
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public BookReponse createNew(NewBookRequest request) {
-        try{
+        try {
             List<Genre> genres = getGenres(request.getListGenreId());
 
             Book book = Book.builder()
@@ -40,19 +42,19 @@ public class BookServiceImpl implements BookService {
             bookRepository.saveAndFlush(book);
             return mapToBookResponse(book);
 
-        }catch (DataIntegrityViolationException e){
+        } catch (DataIntegrityViolationException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "book already exist");
         }
     }
 
 
-    @Transactional(rollbackOn = Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public BookReponse update(UpdateBookRequest request) {
-        try{
+        try {
             List<Genre> genres = getGenres(request.getListGenreId());
             Book book = bookRepository.findById(request.getBookId()).orElseThrow(() ->
-                    new ResponseStatusException(HttpStatus.NOT_FOUND,"book not found")
+                    new ResponseStatusException(HttpStatus.NOT_FOUND, "book not found")
             );
             book.setAuthor(request.getAuthor());
             book.setTitle(request.getTitle());
@@ -60,15 +62,16 @@ public class BookServiceImpl implements BookService {
             book.setPublishedDate(request.getPublishedDate());
             bookRepository.saveAndFlush(book);
             return mapToBookResponse(book);
-        }catch (DataIntegrityViolationException e){
+        } catch (DataIntegrityViolationException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "title book already exist");
         }
     }
 
+    @Transactional(readOnly = true)
     @Override
     public BookReponse getByTitle(String title) {
         Book book = bookRepository.findBookByTitle(title).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND,"book not found")
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "book not found")
         );
         return mapToBookResponse(book);
     }
@@ -79,6 +82,14 @@ public class BookServiceImpl implements BookService {
         return books.stream().map(this::mapToBookResponse).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public Book getById(String id) {
+        return bookRepository.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "book not found")
+        );
+    }
+
     @Override
     public void deleteById(String id) {
         Book book = bookRepository.findById(id).orElseThrow(() ->
@@ -86,6 +97,7 @@ public class BookServiceImpl implements BookService {
         );
         bookRepository.delete(book);
     }
+
     private BookReponse mapToBookResponse(Book book) {
         List<GenreResponse> genreResponseList = book.getBookGenre().stream().map(genre -> GenreResponse.builder()
                 .genreId(genre.getId())
@@ -100,9 +112,9 @@ public class BookServiceImpl implements BookService {
                 .title(book.getTitle())
                 .build();
     }
+
     private List<Genre> getGenres(List<String> listGenre) {
-        List<Genre> genres = listGenre.stream().map(genreService::getById)
+        return listGenre.stream().map(genreService::getById)
                 .collect(Collectors.toList());
-        return genres;
     }
 }

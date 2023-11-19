@@ -1,10 +1,7 @@
 package com.enigma.library_management_system.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -15,6 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "m_book_copies")
+@Builder
 public class BookCopies {
     @Id
     @GenericGenerator(name = "uuid",strategy = "uuid")
@@ -25,6 +23,8 @@ public class BookCopies {
     @JoinColumn(name = "book_id")
     @JsonBackReference
     private Book book;
+    @Column(unique = true)
+    private String isbn;
     @Column(name = "availability_status")
     private Boolean availabilityStatus;
 }
